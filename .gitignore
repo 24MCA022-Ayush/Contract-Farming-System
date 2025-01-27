@@ -1,0 +1,24 @@
+# Flutter/Dart/Pub specific
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+build/
+
+# IntelliJ/VSCode specific
+.idea/
+.vscode/
+*.iml
+
+# macOS specific
+.DS_Store
+.dart_tool/
+
+# Windows specific
+*.exe
+*.dll
+*.pdb
+
+# Other
+pubspec.lock
