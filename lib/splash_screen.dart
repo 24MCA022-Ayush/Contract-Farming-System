@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'farm_connect_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final String? arg; // Add this to receive the argument
+  const SplashScreen({Key? key, this.arg}) : super(key: key);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -75,12 +76,14 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       }
     });
 
-    _navigateToHome();
+    if (widget.arg == null) {_navigateToHome();}
+
   }
 
   _navigateToHome() async {
     await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const FarmConnectScreen()),

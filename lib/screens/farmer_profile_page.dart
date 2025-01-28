@@ -381,20 +381,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(labelText: 'Email',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                suffixIcon: ElevatedButton(
-                    onPressed: (){
-                      // TODO: Add email verification functionality.
-                      print('Verify pressed');
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Colors.green[700]!),
-                    ),
-                    child: Text("Verify",
-                        style: TextStyle(color: Colors.white)
-                    )),
-
-              ),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),),
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),

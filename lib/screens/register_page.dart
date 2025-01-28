@@ -49,6 +49,13 @@ class _RegisterPageState extends State<RegisterPage> {
       // Store user data in Firestore
       if (userCredential.user != null && userType != null) {
         try {
+          await FirebaseFirestore.instance.collection('userProfile').doc(userCredential.user!.uid).set({
+            'name': nameController.text,
+            'email': emailController.text,
+            'userType': userType
+            // Include userId for easier queries later which is stored as a document ID
+          });
+
           await FirebaseFirestore.instance.collection(userType).doc(userCredential.user!.uid).set({
             'firstName': nameController.text,
             'email': emailController.text,

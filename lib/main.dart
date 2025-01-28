@@ -1,4 +1,10 @@
+// main.dart
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demo/farm_connect_screen.dart';
+import 'package:demo/screens/login_page.dart';
 import 'package:demo/values/app_routes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,7 +33,70 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: AppRoutes.getRoutes(),
-      home: const SplashScreen(),
+      home: const SplashScreenWrapper(),
     );
+  }
+}
+
+class SplashScreenWrapper extends StatefulWidget {
+  const SplashScreenWrapper({super.key});
+
+  @override
+  State<SplashScreenWrapper> createState() => _SplashScreenWrapperState();
+}
+
+class _SplashScreenWrapperState extends State<SplashScreenWrapper> {
+  @override
+  Widget build(BuildContext context) {
+
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+
+          if (snapshot.hasData) {
+            return FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('userProfile')
+                  .doc(snapshot.data!.uid)
+                  .get(),
+              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData && snapshot.data!.data() != null) {
+                    var userData = snapshot.data!.data() as Map<String, dynamic>;
+                    String userType = userData['userType'] ?? '';
+
+                    WidgetsBinding.instance.addPostFrameCallback((_) async {
+
+                      await Future.delayed(const Duration(seconds: 3));
+
+
+                      // Use Navigator.pushReplacementNamed to navigate to profile pages
+                      if (userType == 'Farmer') {
+                        Navigator.pushReplacementNamed(context, AppRoutes.farmer_profile, arguments: userType);
+
+                      } else if (userType == 'FCO') {
+
+                      } else if (userType == 'Buyer') {
+
+                      }
+                    });
+                  }
+                }
+
+                //passing with string
+                return const SplashScreen(arg: 'exists');
+              },
+            );
+          }
+
+          //passing with null bydefault
+          return const SplashScreen();
+
+      },
+    );
+
+
+
   }
 }

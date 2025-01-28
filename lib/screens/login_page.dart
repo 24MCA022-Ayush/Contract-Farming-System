@@ -32,6 +32,8 @@ class _LoginPageState extends State<LoginPage>
   late final TextEditingController emailController;
   late final TextEditingController passwordController;
 
+  bool _isLoading = false;
+
   void initializeControllers() {
     emailController = TextEditingController()..addListener(controllerListener);
     passwordController = TextEditingController()
@@ -58,9 +60,13 @@ class _LoginPageState extends State<LoginPage>
   }
 
   Future<void> _signInWithEmailAndPassword() async {
+    setState(() {
+      _isLoading = true; // Show loading indicator
+    });
+
     try {
       if (!_formKey.currentState!.validate()) {
-        return; // Don't proceed if form is invalid
+                return; // Don't proceed if form is invalid
       }
 
       final args = ModalRoute.of(context)?.settings.arguments;
@@ -105,14 +111,19 @@ class _LoginPageState extends State<LoginPage>
         else {
             //  Sign out and show an error message)
           await FirebaseAuth.instance.signOut(); // Sign out the incorrect user
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid user type for this account.')),);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid User Type For This Account.')),);
         }
 
       }
 
     } on FirebaseAuthException catch (e) {
       // Handle login errors (e.g., wrong password, user not found)
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Authentication failed')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid Login Details.')));
+    }
+    finally {
+      setState(() {
+        _isLoading = false; // Hide loading indicator in finally block
+      });
     }
   }
 
@@ -134,7 +145,9 @@ class _LoginPageState extends State<LoginPage>
     final userType = args is String ? args : null;
 
     return Scaffold(
-      body: ListView(
+      body: _isLoading  // Conditionally show loading indicator or the login form
+          ? const Center(child: CircularProgressIndicator())
+          : ListView(
         padding: EdgeInsets.zero,
         children: [
           const GradientBackground(

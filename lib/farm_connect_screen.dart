@@ -46,7 +46,7 @@ class FarmConnectScreen extends StatelessWidget {
                       label: 'Farmers Login',
                       color: Colors.green[600]!,
                       onPressed: () {
-                        Navigator.pushNamed(
+                        Navigator.pushReplacementNamed(
                             context,
                             AppRoutes.login,
                             arguments: 'Farmer');
@@ -58,7 +58,7 @@ class FarmConnectScreen extends StatelessWidget {
                       label: 'Buyer Login',
                       color: Colors.green[700]!,
                       onPressed: () {
-                        Navigator.pushNamed(
+                        Navigator.pushReplacementNamed(
                             context,
                             AppRoutes.login,
                             arguments: 'Buyer');
@@ -70,7 +70,7 @@ class FarmConnectScreen extends StatelessWidget {
                       label: 'FCO Login',
                       color: Colors.green[800]!,
                       onPressed: () {
-                        Navigator.pushNamed(
+                        Navigator.pushReplacementNamed(
                             context,
                             AppRoutes.login,
                             arguments: 'FCO');
