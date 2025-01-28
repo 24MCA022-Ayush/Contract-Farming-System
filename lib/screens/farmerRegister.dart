@@ -55,6 +55,8 @@ class _FarmerRegisterState extends State<FarmerRegister> {
   int _currentPage = 0;
   int _totalLandPatches = 0;
 
+  bool _isLoading = false;
+
   // Controllers and variables
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();

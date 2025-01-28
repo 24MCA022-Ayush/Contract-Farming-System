@@ -48,55 +48,88 @@ class SplashScreenWrapper extends StatefulWidget {
 class _SplashScreenWrapperState extends State<SplashScreenWrapper> {
   @override
   Widget build(BuildContext context) {
-
     return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
-      builder: (context, snapshot) {
-
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
           if (snapshot.hasData) {
             return FutureBuilder<DocumentSnapshot>(
               future: FirebaseFirestore.instance
                   .collection('userProfile')
                   .doc(snapshot.data!.uid)
                   .get(),
-              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData && snapshot.data!.data() != null) {
-                    var userData = snapshot.data!.data() as Map<String, dynamic>;
+              builder: (context, userProfileSnapshot) {
+                if (userProfileSnapshot.connectionState ==
+                    ConnectionState.done) {
+                  if (userProfileSnapshot.hasData &&
+                      userProfileSnapshot.data!.data() != null) {
+                    var userData = userProfileSnapshot.data!.data() as Map<
+                        String,
+                        dynamic>;
                     String userType = userData['userType'] ?? '';
 
-                    WidgetsBinding.instance.addPostFrameCallback((_) async {
 
-                      await Future.delayed(const Duration(seconds: 3));
+                    return FutureBuilder<DocumentSnapshot>(
 
+                      // Nested FutureBuilder
+                      future: FirebaseFirestore.instance
+                          .collection(userType) // Use userType for collection
+                          .doc(
+                          snapshot.data!.uid) // Use uid from auth, not userData
+                          .get(),
 
-                      // Use Navigator.pushReplacementNamed to navigate to profile pages
-                      if (userType == 'Farmer') {
-                        Navigator.pushReplacementNamed(context, AppRoutes.farmer_profile, arguments: userType);
+                      builder: (context, specificUserSnapshot) {
 
-                      } else if (userType == 'FCO') {
+                        if (specificUserSnapshot.connectionState == ConnectionState.done) {
+                          if (specificUserSnapshot.hasData && specificUserSnapshot.data!.exists) { // Check exists
 
-                      } else if (userType == 'Buyer') {
+                            bool isRegistered = specificUserSnapshot.data!['isRegistered'] ?? false;
 
-                      }
-                    });
+                                WidgetsBinding.instance.addPostFrameCallback((_) async {
+                                  await Future.delayed(const Duration(seconds: 3));
+
+                                  if (isRegistered) {
+                                    // Navigate to profile
+
+                                    if (userType == 'Farmer') {
+                                      Navigator.pushReplacementNamed(context, AppRoutes.farmer_profile, arguments: userType);
+                                    } else if (userType == 'FCO') {
+
+                                    } else if (userType == 'Buyer') {
+
+                                    }
+
+                                  } else {
+                                    // Navigate to farmer_register
+
+                                    if (userType == 'Farmer') {
+                                      Navigator.pushReplacementNamed(context, AppRoutes.farmer_register, arguments: userType);
+                                    } else if (userType == 'FCO') {
+
+                                    } else if (userType == 'Buyer') {
+
+                                    }
+                                  }
+                                });
+                          } else {
+                            // User profile exists but NOT in specific user type collection, navigate to farm_connect
+                            Navigator.pushReplacementNamed(context, AppRoutes.farm_connect, arguments: userType);
+                          }
+                        }
+                        // Splash while loading the specific user type document
+                        return const SplashScreen(arg: 'exists');
+                      },
+                    );
                   }
                 }
-
-                //passing with string
+                // Splash while loading user profile
                 return const SplashScreen(arg: 'exists');
               },
             );
+          } else {
+            // No user logged in, show regular SplashScreen
+            return const SplashScreen();
           }
-
-          //passing with null bydefault
-          return const SplashScreen();
-
-      },
+        }
     );
-
-
-
   }
 }
